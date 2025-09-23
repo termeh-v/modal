@@ -1,0 +1,60 @@
+{
+    "type": "module",
+    "license": "ISC",
+    "version": "1.0.0",
+    "name": "@termeh-v/modal",
+    "description": "Modern modal for Vue 3.",
+    "sideEffects": false,
+    "module": "./dist/modal.es.js",
+    "main": "./dist/modal.cjs.js",
+    "types": "./dist/modal.d.ts",
+    "style": "./dist/style.scss",
+    "sass": "./dist/style.scss",
+    "exports": {
+        ".": {
+            "import": "./dist/modal.es.js",
+            "require": "./dist/modal.cjs.js",
+            "types": "./dist/modal.d.ts",
+            "sass": "./dist/style.scss"
+        }
+    },
+    "files": [
+        "dist"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/termeh-v/modal.git"
+    },
+    "author": {
+        "name": "Mojtaba Ekramy",
+        "email": "m.ajamekramy@gmail.com",
+        "url": "https://github.com/mekramy"
+    },
+    "keywords": [
+        "modal",
+        "dialog"
+    ],
+    "scripts": {
+        "test": "vitest",
+        "demo": "vite --config vite.config.ts demo",
+        "build": "vite build",
+        "prepare": "npm run build"
+    },
+    "devDependencies": {
+        "@types/node": "^24.5.2",
+        "@vitejs/plugin-vue": "^6.0.1",
+        "typescript": "^5.9.2",
+        "vite": "^7.1.7",
+        "vite-plugin-dts": "^4.5.4",
+        "vite-plugin-static-copy": "^3.1.2",
+        "vitest": "^3.2.4"
+    },
+    "peerDependencies": {
+        "@termeh-v/composables": "^1.0.0",
+        "@termeh-v/utils": "^1.0.0",
+        "motion": "^12.23.19",
+        "nanoid": "^5.1.6",
+        "termeh": "^1.0.0",
+        "vue": "^3.5.0"
+    }
+}
