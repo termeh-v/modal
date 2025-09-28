@@ -24,6 +24,7 @@ const { attrs, options, loading, close, action } = useCreate(rootEl);
         :class="{ 'is-loading': loading }"
         v-bind="attrs"
     >
+        <div class="scroll-fade is-top"></div>
         <div class="modal-header" v-if="title">
             <h6>{{ title }}</h6>
             <ClearIcon
@@ -51,5 +52,6 @@ const { attrs, options, loading, close, action } = useCreate(rootEl);
                 {{ primary }}
             </button>
         </div>
+        <div class="scroll-fade is-bottom"></div>
     </div>
 </template>

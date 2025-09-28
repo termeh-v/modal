@@ -7,12 +7,14 @@
 
     $fallback-background: termeh.var("base", "color", white);
     $fallback-foreground: termeh.var("base", "foreground", black);
+    $fallback-section: termeh.var("base", "section", #f8f9fa);
     $fallback-separator: termeh.var("base", "separator", #e0e4eb);
     $fallback-radius: termeh.var("radius", "normal");
     $fallback-padding: termeh.var("gap", "macro", 1.6em);
 
     $background: termeh.var("modal", "background", $fallback-background);
     $foreground: termeh.var("modal", "foreground", $fallback-foreground);
+    $section: termeh.var("modal", "section", $fallback-section);
     $separator: termeh.var("modal", "separator", $fallback-separator);
     $shadow: termeh.var("modal", "shadow", none);
 
@@ -24,7 +26,7 @@
     $line-height: termeh.var("line-height", "normal", 1.6em);
 
     $primary: termeh.color("primary");
-    $primary-readable: color.mix($foreground, $primary, 50%);
+    $primary-readable: color.mix($foreground, $primary, 20%);
     $primary-foreground: termeh.variant("primary", "foreground");
 
     .modal-item {
@@ -51,14 +53,14 @@
             max-width: 100%;
 
             .modal-header {
-                z-index: 2;
+                z-index: 3;
                 position: sticky;
                 top: 0;
                 display: flex;
                 flex-direction: row;
                 align-items: center;
                 gap: $gap-micro;
-                padding: $padding;
+                padding: 1em $padding;
                 background: $background;
                 border-bottom: 1px solid $separator;
 
@@ -73,6 +75,24 @@
                 .icon {
                     flex: none;
                 }
+
+                &::before {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    overflow: hidden;
+                    width: 100%;
+                    height: 0;
+                    left: 0;
+                    top: 100%;
+                    margin-top: 1px;
+                    background: linear-gradient(
+                        to bottom,
+                        $background,
+                        transparent
+                    );
+                    @include termeh.transition(height);
+                }
             }
 
             .modal-content {
@@ -82,7 +102,7 @@
             }
 
             .modal-actions {
-                z-index: 2;
+                z-index: 3;
                 position: sticky;
                 bottom: 0;
                 display: flex;
@@ -90,8 +110,8 @@
                 align-items: center;
                 justify-content: flex-end;
                 gap: $gap-micro;
-                padding: $padding;
-                background: $background;
+                padding: 1em $padding;
+                background: $section;
                 border-top: 1px solid $separator;
 
                 .modal-action {
@@ -130,6 +150,52 @@
                             background-color: rgba($foreground, 0.1);
                         }
                     }
+                }
+
+                &::before {
+                    content: "";
+                    display: block;
+                    position: absolute;
+                    overflow: hidden;
+                    width: 100%;
+                    height: 0;
+                    left: 0;
+                    bottom: 100%;
+                    margin-bottom: 1px;
+                    background: linear-gradient(
+                        to top,
+                        $background,
+                        transparent
+                    );
+                    @include termeh.transition(height);
+                }
+            }
+
+            .scroll-fade {
+                display: block;
+                position: sticky;
+                overflow: hidden;
+                width: 100%;
+                height: 0;
+                z-index: 2;
+                @include termeh.transition(height);
+
+                &.is-top {
+                    top: 0;
+                    background: linear-gradient(
+                        to bottom,
+                        $background,
+                        transparent
+                    );
+                }
+
+                &.is-bottom {
+                    bottom: 0;
+                    background: linear-gradient(
+                        to top,
+                        $background,
+                        transparent
+                    );
                 }
             }
 
@@ -183,7 +249,7 @@
 
             @each $name, $color in termeh.colors($colors) {
                 &.is-#{$name} {
-                    $-readable: color.mix($foreground, $color, 50%);
+                    $-readable: color.mix($foreground, $color, 20%);
                     $-foreground: termeh.variant($name, "foreground");
 
                     > .modal-actions {
@@ -208,6 +274,24 @@
 
         &.is-hidden {
             display: none;
+        }
+    }
+
+    @at-root {
+        .modal-container.is-scrollable {
+            &:not(.is-at-top) {
+                .modal-item .modal .scroll-fade.is-top,
+                .modal-item .modal .modal-header::before {
+                    height: $padding * 3;
+                }
+            }
+
+            &:not(.is-at-bottom) {
+                .modal-item .modal .scroll-fade.is-bottom,
+                .modal-item .modal .modal-actions::before {
+                    height: $padding * 3;
+                }
+            }
         }
     }
 }

@@ -32,6 +32,27 @@ function newSimple() {
     counter++;
 }
 
+function newLongNoAction() {
+    simple(
+        content() +
+            "<br/>" +
+            content() +
+            "<br/>" +
+            content() +
+            "<br/>" +
+            content() +
+            "<br/>" +
+            content(),
+        {
+            class: "is-large",
+            onClose: (mode) => {
+                console.log("closed by:", mode);
+            },
+        }
+    );
+    counter++;
+}
+
 function newLong() {
     simple(
         content() +
@@ -115,6 +136,9 @@ function newErrorAction() {
             <div class="actions">
                 <button class="button" @click="newSimple">Simple</button>
                 <button class="button" @click="newLong">Long</button>
+                <button class="button" @click="newLongNoAction">
+                    Simple Long
+                </button>
                 <button class="button is-primary" @click="newAction">
                     With Action
                 </button>
