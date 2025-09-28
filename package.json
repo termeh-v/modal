@@ -1,21 +1,21 @@
 {
     "type": "module",
     "license": "ISC",
-    "version": "1.0.0",
+    "version": "0.0.3",
     "name": "@termeh-v/modal",
     "description": "Modern modal for Vue 3.",
     "sideEffects": false,
+    "sass": "./dist/style.scss",
+    "style": "./dist/style.scss",
     "module": "./dist/modal.es.js",
     "main": "./dist/modal.cjs.js",
     "types": "./dist/modal.d.ts",
-    "style": "./dist/style.scss",
-    "sass": "./dist/style.scss",
     "exports": {
         ".": {
+            "sass": "./dist/style.scss",
             "import": "./dist/modal.es.js",
             "require": "./dist/modal.cjs.js",
-            "types": "./dist/modal.d.ts",
-            "sass": "./dist/style.scss"
+            "types": "./dist/modal.d.ts"
         }
     },
     "files": [
@@ -51,10 +51,11 @@
     },
     "peerDependencies": {
         "@termeh-v/composables": "^1.0.0",
-        "@termeh-v/utils": "^1.0.0",
+        "@termeh-v/utils": "^1.0.1",
         "motion": "^12.23.19",
         "nanoid": "^5.1.6",
         "termeh": "^1.0.0",
+        "unplugin-vue-components": "^29.1.0",
         "vue": "^3.5.0"
     }
 }

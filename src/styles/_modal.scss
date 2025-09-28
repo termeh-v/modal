@@ -1,0 +1,213 @@
+@use "sass:color";
+@use "termeh";
+
+@mixin use($colors: null, $sizes: null) {
+    $colors: termeh.list-safe($colors, "use-modal", "colors", ());
+    $sizes: termeh.map-safe($sizes, "use-modal", "sizes", ());
+
+    $fallback-background: termeh.var("base", "color", white);
+    $fallback-foreground: termeh.var("base", "foreground", black);
+    $fallback-separator: termeh.var("base", "separator", #e0e4eb);
+    $fallback-radius: termeh.var("radius", "normal");
+    $fallback-padding: termeh.var("gap", "macro", 1.6em);
+
+    $background: termeh.var("modal", "background", $fallback-background);
+    $foreground: termeh.var("modal", "foreground", $fallback-foreground);
+    $separator: termeh.var("modal", "separator", $fallback-separator);
+    $shadow: termeh.var("modal", "shadow", none);
+
+    $radius: termeh.var("modal", "radius", $fallback-radius);
+    $padding: termeh.var("modal", "padding", $fallback-padding);
+
+    $decorator: termeh.var("decorator", "size", 2px);
+    $gap-micro: termeh.var("gap", "micro", 8px);
+    $line-height: termeh.var("line-height", "normal", 1.6em);
+
+    $primary: termeh.color("primary");
+    $primary-readable: color.mix($foreground, $primary, 50%);
+    $primary-foreground: termeh.variant("primary", "foreground");
+
+    .modal-item {
+        margin: auto;
+        align-self: center;
+        justify-self: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 100%;
+        padding: $padding;
+        position: relative;
+        box-sizing: border-box;
+
+        .modal {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            position: relative;
+            border-radius: $radius;
+            color: $foreground;
+            background: $background;
+            box-shadow: $shadow;
+            max-width: 100%;
+
+            .modal-header {
+                z-index: 2;
+                position: sticky;
+                top: 0;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: $gap-micro;
+                padding: $padding;
+                background: $background;
+                border-bottom: 1px solid $separator;
+
+                h6 {
+                    flex: 1;
+                    font-size: 1em;
+                    font-weight: 500;
+                    line-height: $line-height;
+                    @include termeh.marginless();
+                }
+
+                .icon {
+                    flex: none;
+                }
+            }
+
+            .modal-content {
+                z-index: 1;
+                display: block;
+                padding: $padding;
+            }
+
+            .modal-actions {
+                z-index: 2;
+                position: sticky;
+                bottom: 0;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-end;
+                gap: $gap-micro;
+                padding: $padding;
+                background: $background;
+                border-top: 1px solid $separator;
+
+                .modal-action {
+                    @include termeh.control();
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    cursor: pointer;
+                    text-align: center;
+                    width: auto;
+                    white-space: nowrap;
+                    text-decoration: none;
+                    border-radius: $radius;
+                    text-overflow: ellipsis;
+                    padding: termeh.inline-padding();
+                    @include termeh.transition(all);
+                    @include termeh.unselectable();
+
+                    &:hover {
+                        text-decoration: none;
+                        transform: scale(1.05);
+                    }
+
+                    &:not(.is-secondary) {
+                        color: $primary-foreground;
+                        background-color: rgba($primary, 0.65);
+
+                        &:hover {
+                            background-color: $primary;
+                        }
+                    }
+
+                    &.is-secondary {
+                        &:hover {
+                            background-color: rgba($foreground, 0.1);
+                        }
+                    }
+                }
+            }
+
+            &.is-loading {
+                @include termeh.loader($line-height, $primary, $decorator);
+
+                > * {
+                    opacity: 0;
+                }
+            }
+
+            &:not(.is-loading) {
+                &:before,
+                &::after {
+                    z-index: 0;
+                    content: " ";
+                    display: block;
+                    position: absolute;
+                    width: 100%;
+                    opacity: 0;
+                    bottom: 0;
+                    height: $gap-micro;
+                    border-radius: $radius;
+                    border-top-left-radius: 0;
+                    border-top-right-radius: 0;
+                    background: $background;
+                    transform: scaleX(90%) translateY(-300%);
+                }
+
+                &.is-top-one,
+                &.is-top-two {
+                    &::before {
+                        opacity: 0.5;
+                        transform: scaleX(90%) translateY(100%);
+                    }
+                }
+
+                &.is-top-two {
+                    &::after {
+                        opacity: 0.25;
+                        transform: scaleX(85%) translateY(200%);
+                    }
+                }
+            }
+
+            @each $name, $size in $sizes {
+                &.is-#{$name} {
+                    width: $size;
+                }
+            }
+
+            @each $name, $color in termeh.colors($colors) {
+                &.is-#{$name} {
+                    $-readable: color.mix($foreground, $color, 50%);
+                    $-foreground: termeh.variant($name, "foreground");
+
+                    > .modal-actions {
+                        .modal-action {
+                            &:not(.is-secondary) {
+                                color: $-foreground;
+                                background-color: rgba($color, 0.65);
+
+                                &:hover {
+                                    background-color: $color;
+                                }
+                            }
+                        }
+                    }
+
+                    &.is-loading {
+                        @include termeh.loader-color($color);
+                    }
+                }
+            }
+        }
+
+        &.is-hidden {
+            display: none;
+        }
+    }
+}

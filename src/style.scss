@@ -1,0 +1,12 @@
+@use "termeh";
+@use "./styles/container";
+@use "./styles/modal";
+
+@mixin use-modal($colors: null, $sizes: null) {
+    @if not termeh.module-presented("modal") {
+        @include termeh.require("modal", "icon");
+        @include termeh.present-module("modal");
+        @include container.use();
+        @include modal.use($colors, $sizes);
+    }
+}

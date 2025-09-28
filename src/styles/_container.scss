@@ -1,0 +1,39 @@
+@use "termeh";
+
+@mixin use() {
+    $fallback-overlay-background: termeh.var("overlay", "background");
+    $fallback-overlay-opacity: termeh.var("overlay", "opacity", 1);
+    $fallback-overlay-filter: termeh.var("overlay", "filter", none);
+
+    $overlay-background: termeh.var(
+        "modal",
+        "overlay-background",
+        $fallback-overlay-background
+    );
+    $overlay-opacity: termeh.var(
+        "modal",
+        "overlay-opacity",
+        $fallback-overlay-opacity
+    );
+    $overlay-filter: termeh.var(
+        "modal",
+        "overlay-filter",
+        $fallback-overlay-filter
+    );
+
+    $z-index: termeh.var("z-index", "modal", 99);
+
+    .modal-container {
+        inset: 0;
+        display: flex;
+        position: absolute;
+        overflow: hidden;
+        overflow-y: auto;
+        max-width: 100%;
+        max-height: 100%;
+        box-sizing: border-box;
+        z-index: $z-index;
+        background: rgba($overlay-background, $overlay-opacity);
+        backdrop-filter: $overlay-filter;
+    }
+}
