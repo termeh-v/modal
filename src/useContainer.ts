@@ -1,39 +1,40 @@
 import { useConfig } from "@termeh-v/composables";
+import mitt from "mitt";
 import { computed, toValue, watch, type MaybeRefOrGetter } from "vue";
 import { getDefaultOptions } from "./internal/options";
-import { type ContainerOption } from "./internal/types";
+import { type ContainerOption, type EmitterEvent } from "./internal/types";
 import { injectCore } from "./useCore";
 
 /**
- * Manages a modal container's state and options.
+ * Composable for managing a single modal container's runtime state and configuration.
  *
- * Provides reactive state for modals in a container, including
- * count, active modal ID, and body class toggling. Options are
- * kept in sync with the global core.
+ * It provides reactive state for the modals inside the container, manages its
+ * configuration against global defaults, and controls the document body class.
  *
- * @param name - Unique identifier of the modal container.
- * @param options - Reactive default or custom container options.
- * @returns An object containing reactive properties: `modals`, `count`, `isEmpty`, and `activeId`.
+ * @param name - The unique string identifier for this modal container.
+ * @param options - Reactive or static custom configuration for this container.
+ * @returns An object with container state, configuration, and event emitter.
  */
 export function useContainer(
     name: string,
     options: MaybeRefOrGetter<Partial<ContainerOption> | undefined>
 ) {
     const core = injectCore();
+    const emitter = mitt<EmitterEvent>();
     const { config, set: setConfig } = useConfig<ContainerOption>(
         getDefaultOptions()
     );
 
-    /** Reactive array of modals in this container. */
+    /** Reactive array of all modals currently in this container stack. */
     const modals = core.getContainerModals(name);
 
-    /** Number of modals in the container. */
+    /** Computed ref: The total number of modals in the container. */
     const count = computed(() => modals.value.length);
 
-    /** True if the container has no modals. */
+    /** Computed ref: Returns `true` if the container stack is empty. */
     const isEmpty = computed(() => modals.value.length === 0);
 
-    /** Key of the last (active) modal, or undefined if empty. */
+    /** Computed ref: The unique key of the topmost (active) modal, or `undefined` if empty. */
     const activeId = computed(() =>
         modals.value.length
             ? modals.value[modals.value.length - 1]?.key
@@ -41,8 +42,8 @@ export function useContainer(
     );
 
     /**
-     * Watches container options and updates both the core and local configuration.
-     * Runs immediately on initialization.
+     * Watches the `options` prop and synchronizes configuration with the global core service
+     * and the local `config` ref.
      */
     watch(
         () => toValue(options),
@@ -54,12 +55,11 @@ export function useContainer(
     );
 
     /**
-     * Watches the modal count to toggle the body class.
-     * Adds the configured class when there are modals, removes it when empty.
+     * Watches the modal `count` and toggles the `bodyClass` on the document `<body>` element.
      */
     watch(count, (v) => {
         if (!config.bodyClass) return;
-        if (v && v > 0) {
+        if (v > 0) {
             document.body.classList.add(config.bodyClass);
         } else {
             document.body.classList.remove(config.bodyClass);
@@ -67,6 +67,8 @@ export function useContainer(
     });
 
     return {
+        config,
+        emitter,
         modals,
         count,
         isEmpty,

@@ -1,12 +1,15 @@
 import { mergeConfig, type DeepPartial } from "@termeh-v/utils";
 import type { ContainerOption } from "./types";
 
-/** Default configuration for modal containers. */
+/**
+ * Global default configuration for all modal containers.
+ * @type {ContainerOption}
+ */
 let defaultOptions: ContainerOption = {
     closable: true,
     animations: {
         enter: {
-            params: { opacity: [0, 1], translateY: ["25%", 0] },
+            params: { opacity: [0.85, 1], translateY: ["3rem", 0] },
             options: { duration: 0.2, type: "spring", stiffness: 150 },
         },
         refuse: {
@@ -14,7 +17,7 @@ let defaultOptions: ContainerOption = {
             options: { duration: 0.15, ease: "easeInOut" },
         },
         leave: {
-            params: { opacity: [1, 0], translateY: [0, "25%"] },
+            params: { opacity: [1, 0], translateY: [0, "3rem"] },
             options: { duration: 0.1, ease: "easeOut" },
         },
     },
@@ -23,10 +26,9 @@ let defaultOptions: ContainerOption = {
 /**
  * Updates the global default modal options.
  *
- * Deeply merges the provided partial options with the current defaults.
- * Nested animation keys are fully replaced rather than merged.
+ * Performs a deep merge, but **replaces** nested `animations` properties entirely.
  *
- * @param option - Partial options to merge with defaults.
+ * @param option Partial options to merge with the current defaults.
  */
 export function setDefaultOptions(option: DeepPartial<ContainerOption>) {
     defaultOptions = mergeConfig(defaultOptions, option, {
@@ -42,7 +44,7 @@ export function setDefaultOptions(option: DeepPartial<ContainerOption>) {
 /**
  * Returns the current global default modal options.
  *
- * @returns The active default container configuration.
+ * @returns The active default container configuration object.
  */
 export function getDefaultOptions(): ContainerOption {
     return defaultOptions;

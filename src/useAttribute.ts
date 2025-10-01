@@ -1,36 +1,43 @@
 import { isNumber, isObject } from "@termeh-v/utils";
+import type { Emitter } from "mitt";
 import { computed, useAttrs } from "vue";
-import { type ModalAnimations, type ModalProps } from "./internal/types";
+import {
+    type EmitterEvent,
+    type ModalAnimations,
+    type ModalProps,
+} from "./internal/types";
 
 /**
- * Extracts and normalizes modal-related attributes from `$attrs`.
+ * Normalizes and extracts modal-related attributes passed via Vue's `$attrs`.
  *
- * Supports both `kebab-case` and `camelCase` keys. Provides typed
- * computed properties for modal state, animations, options, and
- * non-modal attributes.
+ * It supports both `kebab-case` and `camelCase` keys (e.g., `vm-index` or `vmIndex`)
+ * and returns typed, computed properties for core modal data.
  *
- * @returns An object with reactive properties: `index`, `count`, `animations`, `options`, and `attrs`.
+ * @returns An object containing computed refs for modal state, configs, and non-reserved attributes.
  */
 export function useAttributes() {
     const attributes = useAttrs();
 
     /**
-     * Safely casts a value to a number.
-     * Returns undefined if the value is not a valid number.
+     * Safely casts a value to `number` if valid, otherwise returns `undefined`.
+     * @param v - The value to check.
+     * @returns The number or `undefined`.
      */
     function numSafe(v: unknown): number | undefined {
         return v && isNumber(v) ? v : undefined;
     }
 
     /**
-     * Safely casts a value to an object of type T.
-     * Returns undefined if the value is not a valid object.
+     * Safely casts a value to a specified object type `T` if valid, otherwise returns `undefined`.
+     * @template T The expected object type.
+     * @param v - The value to check.
+     * @returns The typed object or `undefined`.
      */
     function objectSafe<T extends object>(v: unknown): T | undefined {
         return v && isObject<T>(v) ? v : undefined;
     }
 
-    /** Current index of the modal in its container, defaulting to 0. */
+    /** Computed ref for the current index of the modal in its container stack (defaults to 0). */
     const index = computed<number>(
         () =>
             numSafe(attributes["vm-index"]) ??
@@ -38,7 +45,7 @@ export function useAttributes() {
             0
     );
 
-    /** Total number of modals in the container, defaulting to 0. */
+    /** Computed ref for the total number of modals in the container (defaults to 0). */
     const count = computed(
         () =>
             numSafe(attributes["vm-count"]) ??
@@ -46,7 +53,15 @@ export function useAttributes() {
             0
     );
 
-    /** Modal animation configuration if provided. */
+    /** Computed ref for the event emitter instance provided by the container. */
+    const emitter = computed(
+        () =>
+            objectSafe<Emitter<EmitterEvent>>(attributes["vm-emitter"]) ??
+            objectSafe<Emitter<EmitterEvent>>(attributes["vmEmitter"]) ??
+            undefined
+    );
+
+    /** Computed ref for the explicit animation configuration. */
     const animations = computed(
         () =>
             objectSafe<ModalAnimations>(attributes["vm-animations"]) ??
@@ -54,7 +69,7 @@ export function useAttributes() {
             undefined
     );
 
-    /** Modal options object with identifiers and callbacks if provided. */
+    /** Computed ref for the modal's core options, including identifiers and handlers. */
     const options = computed(
         () =>
             objectSafe<ModalProps>(attributes["vm-options"]) ??
@@ -62,13 +77,15 @@ export function useAttributes() {
             undefined
     );
 
-    /** All attributes that are not reserved for the modal system. */
+    /** Computed ref containing only the attributes not reserved by the modal system. */
     const attrs = computed(() => {
         const reservedKeys = new Set([
             "vm-index",
             "vmIndex",
             "vm-count",
             "vmCount",
+            "vm-emitter",
+            "vmEmitter",
             "vm-animations",
             "vmAnimations",
             "vm-options",
@@ -85,6 +102,7 @@ export function useAttributes() {
     return {
         index,
         count,
+        emitter,
         animations,
         options,
         attrs,

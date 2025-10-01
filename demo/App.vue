@@ -45,9 +45,6 @@ function newLongNoAction() {
             content(),
         {
             class: "is-large",
-            onClose: (mode) => {
-                console.log("closed by:", mode);
-            },
         }
     );
     counter++;
@@ -65,14 +62,11 @@ function newLong() {
             "<br/>" +
             content(),
         {
-            title: "Long modal",
             primaryAction: "Proccess",
             secondaryAction: "Forget",
             class: "is-large",
             onClick: () => Promise.resolve(false),
-            onClose: (mode) => {
-                console.log("closed by:", mode);
-            },
+
             onAction: (k) =>
                 k == "secondary"
                     ? Promise.resolve(true)
@@ -210,9 +204,9 @@ body {
 }
 
 .example .placeholder {
-    height: 70vh;
+    height: 40rem;
     position: relative;
     border-radius: 2px;
-    background: termeh.var("base", "section");
+    background: #eeeef5;
 }
 </style>

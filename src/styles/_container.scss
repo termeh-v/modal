@@ -23,7 +23,7 @@
 
     $z-index: termeh.var("z-index", "modal", 99);
 
-    .modal-container {
+    .modal-dimmer {
         inset: 0;
         display: flex;
         position: absolute;
@@ -35,5 +35,17 @@
         z-index: $z-index;
         background: rgba($overlay-background, $overlay-opacity);
         backdrop-filter: $overlay-filter;
+
+        .modal-container {
+            margin: auto;
+            align-self: center;
+            justify-self: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 100%;
+            position: relative;
+            box-sizing: border-box;
+        }
     }
 }

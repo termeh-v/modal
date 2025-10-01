@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { useTemplateRef } from "vue";
-import { useCreate } from "../useCreate";
+import BaseModal from "./BaseModal.vue";
 import ClearIcon from "./CloseIcon.vue";
-
-defineOptions({
-    inheritAttrs: false,
-});
 
 defineProps<{
     message: string;
@@ -13,45 +8,33 @@ defineProps<{
     primary?: string;
     secondary?: string;
 }>();
-
-const rootEl = useTemplateRef("modal");
-const { attrs, options, loading, close, action } = useCreate(rootEl);
 </script>
 <template>
-    <div
-        ref="modal"
-        class="modal"
-        :class="{ 'is-loading': loading }"
-        v-bind="attrs"
-    >
-        <div class="scroll-fade is-top"></div>
-        <div class="modal-header" v-if="title">
-            <h6>{{ title }}</h6>
+    <BaseModal>
+        <template #header="props">
+            <h6 v-if="title">{{ title }}</h6>
             <ClearIcon
-                class="is-medium is-action"
-                @click.stop="close"
-                v-if="options?.closable"
+                class="is-medium"
+                @click.stop="props?.close()"
+                v-if="title && props?.options?.closable"
             />
-        </div>
-        <div class="modal-content">
-            <p v-html="message"></p>
-        </div>
-        <div class="modal-actions" v-if="primary || secondary">
+        </template>
+        <template #actions="props">
             <button
                 class="modal-action is-secondary"
-                @click.prevent.stop="action('secondary')"
+                @click.prevent.stop="props?.action('secondary')"
                 v-if="secondary"
             >
                 {{ secondary }}
             </button>
             <button
                 class="modal-action"
-                @click.prevent.stop="action('primary')"
+                @click.prevent.stop="props?.action('primary')"
                 v-if="primary"
             >
                 {{ primary }}
             </button>
-        </div>
-        <div class="scroll-fade is-bottom"></div>
-    </div>
+        </template>
+        <p v-html="message"></p>
+    </BaseModal>
 </template>

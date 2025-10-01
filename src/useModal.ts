@@ -1,18 +1,18 @@
 import { mergeConfig } from "@termeh-v/utils";
 import { customAlphabet } from "nanoid";
-import { h, type Component } from "vue";
+import { markRaw, type Component } from "vue";
 import Simple from "./components/Simple.vue";
 import { getDefaultOptions } from "./internal/options";
 import { type ModalOption } from "./internal/types";
 import { injectCore } from "./useCore";
 
 /**
- * Composable for creating and managing individual modals.
+ * Composable for **creating and registering new modal instances** with the core system.
  *
- * Handles generating unique modal IDs, merging default, container-specific,
- * and user-provided options, and registering modals with the global core.
+ * Handles ID generation, option merging (global defaults + container options + user options),
+ * and adding the modal to the relevant container stack.
  *
- * @returns An object with methods to create modals: `create` and `simple`.
+ * @returns An object with methods: `create` (for custom components) and `simple` (for basic text alerts).
  */
 export function useModal() {
     const core = injectCore();
@@ -21,12 +21,12 @@ export function useModal() {
     );
 
     /**
-     * Creates and registers a new modal instance.
+     * Creates and registers a new modal instance with a custom Vue component.
      *
      * @template Props - Props type for the modal component.
-     * @param component - Vue component to render inside the modal.
+     * @param component - The Vue component to render inside the modal.
      * @param props - Props to pass to the component.
-     * @param options - Optional configuration, including container and callbacks.
+     * @param options - Optional configuration for the modal instance.
      */
     function create<Props extends Record<string, unknown>>(
         component: Component,
@@ -55,19 +55,19 @@ export function useModal() {
 
         core.addModal(container, {
             ...params,
-            component: h(component, {
+            component: markRaw(component),
+            props: {
                 ...props,
-                vmAnimations: config.animations,
                 vmOptions: params,
-            }),
+            },
         });
     }
 
     /**
-     * Creates a simple text-based modal with optional title, actions, and icon.
+     * Creates a simple, text-based modal using the built-in `Simple` component.
      *
-     * @param message - Main message to display in the modal.
-     * @param options - Optional modal configuration and additional props.
+     * @param message - The main message content to display.
+     * @param options - Modal configuration, plus optional title and action button labels.
      */
     function simple(
         message: string,
