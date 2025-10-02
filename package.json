@@ -1,7 +1,7 @@
 {
     "type": "module",
     "license": "ISC",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "name": "@termeh-v/modal",
     "description": "Modern modal for Vue 3.",
     "sideEffects": false,

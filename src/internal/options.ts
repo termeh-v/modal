@@ -38,6 +38,14 @@ export function setDefaultOptions(option: DeepPartial<ContainerOption>) {
         "animations.refuse.options": "replace",
         "animations.leave.params": "replace",
         "animations.leave.options": "replace",
+        "animations.activate.params": "replace",
+        "animations.activate.options": "replace",
+        "animations.secondary.params": "replace",
+        "animations.secondary.options": "replace",
+        "animations.tertiary.params": "replace",
+        "animations.tertiary.options": "replace",
+        "animations.hide.params": "replace",
+        "animations.hide.options": "replace",
     });
 }
 
