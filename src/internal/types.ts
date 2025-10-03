@@ -1,146 +1,106 @@
 import type { AnimationOptions, DOMKeyframesDefinition } from "motion";
 import type { Component, Raw } from "vue";
 
-/**
- * Defines where a click occurred.
- * - 'modal': Click was **inside** the modal content.
- * - 'overlay': Click was on the **background overlay**.
- */
+/** Where a click occurred: inside modal content or on overlay. */
 export type ClickArea = "modal" | "overlay";
 
-/**
- * Defines the **mode** used to close the modal.
- * - 'manual': Closed by **function call**.
- * - 'click': Closed by **clicking inside** the modal content.
- * - 'overlay': Closed by **clicking the overlay**.
- * - 'action': Closed due to a **specific user action** (e.g., form submit).
- */
+/** Mode in which a modal was closed. */
 export type CloseMode = "manual" | "click" | "overlay" | "action";
 
-/**
- * Handler function for the modal **opening** event.
- */
+/** Handler called when a modal opens. */
 export type OpenHandler = () => void;
 
-/**
- * Handler function for the modal **closing** event.
- * @param mode The mode in which the modal was closed.
- */
+/** Handler called when a modal closes. */
 export type CloseHandler = (mode: CloseMode) => void;
 
-/**
- * Handler for click events on the modal or overlay.
- * @param mode The area clicked.
- * @returns Promise<boolean> **True** if the click should proceed (e.g., close the modal).
- */
+/** Handler for clicks on modal or overlay. Returns true to proceed (close). */
 export type ClickHandler = (mode: ClickArea) => Promise<boolean>;
 
-/**
- * Handler for specific actions **inside** the modal (e.g., button press).
- * @template T Optional data type for the action.
- * @param key Unique identifier for the action.
- * @param data Optional data payload.
- * @returns Promise<boolean> **True** if the action was successful and closing is allowed.
- */
+/** Handler for named actions inside a modal. */
 export type ActionHandler<T = unknown> = (
     key: string,
     data?: T
 ) => Promise<boolean>;
 
-// --- Animation Definitions ---
-
-/**
- * Defines the parameters for a **single animation**.
- */
+/** Single animation definition (keyframes + options). */
 export interface Animation {
-    /** CSS keyframes for the animation. */
+    /** CSS keyframes or DOM keyframes definition used by the animation. */
     params?: DOMKeyframesDefinition;
     /** Animation options (duration, easing, etc.). */
     options?: AnimationOptions;
 }
 
-/**
- * Defines animations for different modal states.
- */
+/** Collection of animations for various modal states. */
 export interface ModalAnimations {
-    /** Animation for modal **entering**. */
+    /** Animation used when a modal enters. */
     enter: Animation;
-    /** Animation when an action is **refused**. */
+    /** Animation used when an action is refused. */
     refuse: Animation;
-    /** Animation for modal **leaving**. */
+    /** Animation used when a modal leaves. */
     leave: Animation;
-    /** Optional animation to switch to a **activate** state. */
+    /** Mobile-specific enter animation. */
+    mobileEnter: Animation;
+    /** Mobile-specific refuse animation. */
+    mobileRefuse: Animation;
+    /** Mobile-specific leave animation. */
+    mobileLeave: Animation;
+    /** Optional activate animation (restore to top). */
     activate?: Animation;
-    /** Optional animation for a **secondary** view layer. */
+    /** Optional secondary-layer animation. */
     secondary?: Animation;
-    /** Optional animation for a **tertiary** view layer. */
+    /** Optional tertiary-layer animation. */
     tertiary?: Animation;
-    /** Optional animation for **hiding** the modal (pushing to stack). */
+    /** Optional hide animation (push back). */
     hide?: Animation;
 }
 
-/**
- * Options for the overall modal **container/overlay**.
- */
+/** Options for a modal container (overlay). */
 export interface ContainerOption {
-    /** Whether the modal can be **closed by user interaction** (e.g., overlay click). */
+    /** Whether modals in this container can be closed by user interaction. */
     closable: boolean;
-    /** Optional CSS class to apply to the document `<body>` tag. */
+    /** Optional CSS class to add to document body when container has modals. */
     bodyClass?: string;
-    /** Collection of all modal animations. */
+    /** Animations collection for container modals. */
     animations: ModalAnimations;
 }
 
-// --- Modal Instance Definitions ---
-
-/**
- * Base configuration options for a **single modal**.
- */
+/** Base options for a single modal instance. */
 export interface ModalOption {
-    /** The HTML element ID of the container where the modal is mounted. */
+    /** Target container ID where the modal will mount. */
     container: string;
-    /** Overrides container setting: determines if the modal is **user-closable**. */
+    /** Whether this modal instance is closable by user interaction. */
     closable: boolean;
-    /** Optional handler when the modal **opens**. */
+    /** Optional callback executed when the modal opens. */
     onOpen?: OpenHandler;
-    /** Optional handler when the modal **closes**. */
+    /** Optional callback executed when the modal closes. */
     onClose?: CloseHandler;
-    /** Optional handler for **click** events. */
+    /** Optional handler for clicks (modal/overlay). */
     onClick?: ClickHandler;
-    /** Optional handler for **action** events. */
+    /** Optional handler for named actions inside the modal. */
     onAction?: ActionHandler;
 }
 
-/**
- * `ModalOption` plus keys for internal stack management.
- */
+/** Modal props passed into modal component (internal). */
 export interface ModalProps extends ModalOption {
-    /** Unique key for the modal **component type**. */
+    /** Component key used to identify the modal type. */
     key: string;
-    /** Unique identifier for this **specific instance**. */
+    /** Unique instance identifier for this specific modal. */
     identifier: string;
 }
 
-/**
- * The **complete definition** of a modal managed by the system.
- */
+/** Complete modal definition managed by the core. */
 export interface Modal extends ModalOption {
-    /** Unique key for the modal **component type**. */
+    /** Component key used to identify the modal type. */
     key: string;
-    /** Unique identifier for this **specific instance**. */
+    /** Unique instance identifier for this specific modal. */
     identifier: string;
-    /** The **Vue component** to render. */
+    /** Vue component to render for the modal. */
     component: Raw<Component>;
-    /** Props passed to the component. */
+    /** Props passed to the modal component. */
     props: Record<string, unknown>;
 }
 
-// --- Event Definitions ---
-
-/**
- * Defines internal events emitted by the modal system.
- * The value of each property is the modal's identifier.
- */
+/** Events emitted by the modal system. Values are modal identifiers. */
 export type EmitterEvent = {
     /** Modal was **added** to the stack. */
     added?: string;
@@ -156,7 +116,5 @@ export type EmitterEvent = {
     goTertiary?: string;
 };
 
-/**
- * Union of all valid event names in `EmitterEvent`.
- */
+/** Union of event names supported by the core emitter. */
 export type ModalCoreEvent = keyof EmitterEvent;

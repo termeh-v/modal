@@ -26,15 +26,19 @@
     .modal-dimmer {
         inset: 0;
         display: flex;
-        position: absolute;
+        position: fixed;
         overflow: hidden;
         overflow-y: auto;
         max-width: 100%;
         max-height: 100%;
-        box-sizing: border-box;
         z-index: $z-index;
+        box-sizing: border-box;
         background: rgba($overlay-background, $overlay-opacity);
         backdrop-filter: $overlay-filter;
+
+        &.is-sub {
+            position: absolute;
+        }
 
         .modal-container {
             margin: auto;
@@ -46,6 +50,12 @@
             max-width: 100%;
             position: relative;
             box-sizing: border-box;
+
+            @include termeh.mobile() {
+                margin: initial;
+                margin-top: auto;
+                justify-self: stretch;
+            }
         }
     }
 }

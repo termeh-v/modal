@@ -54,130 +54,177 @@
             }
 
             .modal-header {
-                z-index: 2;
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
                 position: sticky;
                 top: 0;
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                gap: $gap-micro;
-
-                &:not(.is-empty) {
-                    padding: 1em $padding;
-                    background: $background;
-                    border-bottom: 1px solid $separator;
-                }
-
-                h6 {
-                    flex: 1;
-                    font-size: 1em;
-                    font-weight: 500;
-                    line-height: $line-height;
-                    @include termeh.marginless();
-                }
-
-                .icon {
-                    flex: none;
-                    cursor: pointer;
-
-                    &:hover {
-                        transform: scale(1.2);
-                    }
-                }
-            }
-
-            .modal-actions {
                 z-index: 2;
-                position: sticky;
-                bottom: 0;
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                justify-content: flex-end;
-                gap: $gap-micro;
+                background: $background;
+                border-top-left-radius: $radius;
+                border-top-right-radius: $radius;
 
-                &:not(.is-empty) {
-                    padding: 1em $padding;
-                    background: $background;
-                    border-top: 1px solid $separator;
-                }
-
-                .modal-action {
-                    @include termeh.control();
-                    display: flex;
+                .modal-handle {
+                    display: none;
                     align-items: center;
                     justify-content: center;
-                    position: relative;
-                    cursor: pointer;
-                    text-align: center;
-                    width: auto;
-                    white-space: nowrap;
-                    text-decoration: none;
-                    border-radius: $radius;
-                    text-overflow: ellipsis;
-                    padding: termeh.inline-padding();
-                    @include termeh.transition(all);
-                    @include termeh.unselectable();
+                    padding: $gap-micro;
+                    touch-action: none !important;
 
-                    &:hover {
-                        text-decoration: none;
-                        transform: scale(1.05);
-                    }
-
-                    &:not(.is-secondary) {
-                        color: $primary-foreground;
-                        background-color: rgba($primary, 0.65);
-
-                        &:hover {
-                            background-color: $primary;
-                        }
-                    }
-
-                    &.is-secondary {
-                        &:hover {
-                            background-color: rgba($foreground, 0.1);
-                        }
+                    div {
+                        display: block;
+                        border-radius: 9999px;
+                        background: $separator;
+                        width: 4rem;
+                        height: 4px;
                     }
                 }
-            }
 
-            .scroll-fade {
-                display: block;
-                position: absolute;
-                overflow: hidden;
-                left: 0;
-                right: 0;
-                width: 100%;
-                height: 0;
-                @include termeh.transition(height);
-
-                &.is-top {
+                .scroll-fade {
+                    display: block;
+                    position: absolute;
+                    overflow: hidden;
+                    left: 0;
+                    right: 0;
                     top: 100%;
+                    width: 100%;
+                    height: 0;
+                    z-index: -1;
                     background: linear-gradient(
                         to bottom,
                         $background,
                         transparent
                     );
+                    @include termeh.transition(height);
 
                     @at-root {
                         .modal-dimmer.is-top-scrolled #{&} {
-                            height: $padding * 3;
+                            height: $padding * 4;
                         }
                     }
                 }
 
-                &.is-bottom {
+                .modal-header-content {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    z-index: 1;
+                    gap: $gap-micro;
+                    padding: 1em $padding;
+                    border-bottom: 1px solid $separator;
+
+                    h6 {
+                        flex: 1;
+                        font-size: 1em;
+                        font-weight: 500;
+                        line-height: $line-height;
+                        @include termeh.marginless();
+                    }
+
+                    .icon {
+                        flex: none;
+                        cursor: pointer;
+
+                        &:hover {
+                            transform: scale(1.2);
+                        }
+                    }
+                }
+
+                &.is-empty {
+                    .modal-header-content {
+                        display: none;
+                    }
+                }
+            }
+
+            .modal-actions {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                position: sticky;
+                bottom: 0;
+                z-index: 2;
+                background: $background;
+                border-bottom-left-radius: $radius;
+                border-bottom-right-radius: $radius;
+
+                .scroll-fade {
+                    display: block;
+                    position: absolute;
+                    overflow: hidden;
+                    left: 0;
+                    right: 0;
                     bottom: 100%;
+                    width: 100%;
+                    height: 0;
+                    z-index: -1;
                     background: linear-gradient(
                         to top,
                         $background,
                         transparent
                     );
+                    @include termeh.transition(height);
 
                     @at-root {
                         .modal-dimmer.is-bottom-scrolled #{&} {
-                            height: $padding * 3;
+                            height: $padding * 4;
                         }
+                    }
+                }
+
+                .modal-actions-content {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: flex-end;
+                    z-index: 1;
+                    gap: $gap-micro;
+                    padding: 1em $padding;
+                    border-top: 1px solid $separator;
+
+                    .modal-action {
+                        @include termeh.control();
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        cursor: pointer;
+                        text-align: center;
+                        width: auto;
+                        white-space: nowrap;
+                        text-decoration: none;
+                        border-radius: $radius;
+                        text-overflow: ellipsis;
+                        padding: termeh.inline-padding();
+                        @include termeh.transition(all);
+                        @include termeh.unselectable();
+
+                        &:hover {
+                            text-decoration: none;
+                            transform: scale(1.05);
+                        }
+
+                        &:not(.is-secondary) {
+                            color: $primary-foreground;
+                            background-color: rgba($primary, 0.65);
+
+                            &:hover {
+                                background-color: $primary;
+                            }
+                        }
+
+                        &.is-secondary {
+                            &:hover {
+                                background-color: rgba($foreground, 0.1);
+                            }
+                        }
+                    }
+                }
+
+                &.is-empty {
+                    .modal-actions-content {
+                        display: none;
                     }
                 }
             }
@@ -234,6 +281,30 @@
 
                 > * {
                     opacity: 0;
+                }
+            }
+        }
+
+        @include termeh.mobile() {
+            padding: $padding * 2 termeh.half($gap-micro) 0;
+
+            .modal {
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+
+                .modal-header {
+                    &.is-empty {
+                        background: $background;
+                    }
+
+                    .modal-handle {
+                        display: flex;
+                    }
+                }
+
+                .modal-actions {
+                    border-bottom-left-radius: 0;
+                    border-bottom-right-radius: 0;
                 }
             }
         }

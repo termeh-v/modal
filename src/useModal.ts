@@ -7,12 +7,11 @@ import { type ModalOption } from "./internal/types";
 import { injectCore } from "./useCore";
 
 /**
- * Composable for **creating and registering new modal instances** with the core system.
+ * Composable that provides helpers to create modal instances programmatically.
  *
- * Handles ID generation, option merging (global defaults + container options + user options),
- * and adding the modal to the relevant container stack.
- *
- * @returns An object with methods: `create` (for custom components) and `simple` (for basic text alerts).
+ * Methods:
+ *  - create: create a modal from a custom component
+ *  - simple: create a simple text modal using the bundled `Simple` component
  */
 export function useModal() {
     const core = injectCore();
@@ -21,12 +20,11 @@ export function useModal() {
     );
 
     /**
-     * Creates and registers a new modal instance with a custom Vue component.
-     *
-     * @template Props - Props type for the modal component.
-     * @param component - The Vue component to render inside the modal.
-     * @param props - Props to pass to the component.
-     * @param options - Optional configuration for the modal instance.
+     * Create & register a new modal instance with a custom component.
+     * @template Props - props type passed to the component
+     * @param component - Vue component to render inside the modal
+     * @param props - Props for the component
+     * @param options - Partial modal options
      */
     function create<Props extends Record<string, unknown>>(
         component: Component,
@@ -64,10 +62,9 @@ export function useModal() {
     }
 
     /**
-     * Creates a simple, text-based modal using the built-in `Simple` component.
-     *
-     * @param message - The main message content to display.
-     * @param options - Modal configuration, plus optional title and action button labels.
+     * Create a simple text modal using the built-in `Simple` component.
+     * @param message - main message text
+     * @param options - optional modal options and labels
      */
     function simple(
         message: string,
@@ -89,13 +86,7 @@ export function useModal() {
 
         create(
             Simple,
-            {
-                message,
-                title,
-                primary,
-                secondary,
-                ...otherProps,
-            },
+            { message, title, primary, secondary, ...otherProps },
             options
         );
     }

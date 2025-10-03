@@ -8,36 +8,26 @@ import {
 } from "./internal/types";
 
 /**
- * Normalizes and extracts modal-related attributes passed via Vue's `$attrs`.
+ * Extracts and normalizes modal-related attributes provided through `$attrs`.
  *
- * It supports both `kebab-case` and `camelCase` keys (e.g., `vm-index` or `vmIndex`)
- * and returns typed, computed properties for core modal data.
- *
- * @returns An object containing computed refs for modal state, configs, and non-reserved attributes.
+ * The composable supports both kebab-case and camelCase keys (e.g. `vm-index` or `vmIndex`).
+ * It returns computed refs for index, count, emitter, animations, options and the
+ * remaining (non-reserved) attributes.
  */
 export function useAttributes() {
     const attributes = useAttrs();
 
-    /**
-     * Safely casts a value to `number` if valid, otherwise returns `undefined`.
-     * @param v - The value to check.
-     * @returns The number or `undefined`.
-     */
+    /** Convert a value to number if valid, otherwise undefined. */
     function numSafe(v: unknown): number | undefined {
         return v && isNumber(v) ? v : undefined;
     }
 
-    /**
-     * Safely casts a value to a specified object type `T` if valid, otherwise returns `undefined`.
-     * @template T The expected object type.
-     * @param v - The value to check.
-     * @returns The typed object or `undefined`.
-     */
+    /** Cast a value to an object T if valid, otherwise undefined. */
     function objectSafe<T extends object>(v: unknown): T | undefined {
         return v && isObject<T>(v) ? v : undefined;
     }
 
-    /** Computed ref for the current index of the modal in its container stack (defaults to 0). */
+    /** Computed: index of this modal in its container stack. */
     const index = computed<number>(
         () =>
             numSafe(attributes["vm-index"]) ??
@@ -45,7 +35,7 @@ export function useAttributes() {
             0
     );
 
-    /** Computed ref for the total number of modals in the container (defaults to 0). */
+    /** Computed: total modals count in the container. */
     const count = computed(
         () =>
             numSafe(attributes["vm-count"]) ??
@@ -53,7 +43,7 @@ export function useAttributes() {
             0
     );
 
-    /** Computed ref for the event emitter instance provided by the container. */
+    /** Computed: event emitter instance passed from the container (if any). */
     const emitter = computed(
         () =>
             objectSafe<Emitter<EmitterEvent>>(attributes["vm-emitter"]) ??
@@ -61,7 +51,7 @@ export function useAttributes() {
             undefined
     );
 
-    /** Computed ref for the explicit animation configuration. */
+    /** Computed: explicit animation configuration (if provided). */
     const animations = computed(
         () =>
             objectSafe<ModalAnimations>(attributes["vm-animations"]) ??
@@ -69,7 +59,7 @@ export function useAttributes() {
             undefined
     );
 
-    /** Computed ref for the modal's core options, including identifiers and handlers. */
+    /** Computed: modal props/options passed via attributes. */
     const options = computed(
         () =>
             objectSafe<ModalProps>(attributes["vm-options"]) ??
@@ -77,7 +67,7 @@ export function useAttributes() {
             undefined
     );
 
-    /** Computed ref containing only the attributes not reserved by the modal system. */
+    /** Computed: all non-reserved attributes forwarded to the inner component. */
     const attrs = computed(() => {
         const reservedKeys = new Set([
             "vm-index",

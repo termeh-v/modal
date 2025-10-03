@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import { useMediaQueries } from "@termeh-v/composables";
 import { Inliner } from "@termeh-v/utils";
 import { useModal } from "../src";
 
 const { simple } = useModal();
+const { isMobile } = useMediaQueries();
 
 let counter = 0;
 const content = () =>
@@ -65,15 +67,13 @@ function newLong() {
             primaryAction: "Proccess",
             secondaryAction: "Forget",
             class: "is-large",
+            closable: false,
             onClick: () => Promise.resolve(false),
-
             onAction: (k) =>
                 k == "secondary"
                     ? Promise.resolve(true)
-                    : new Promise<boolean>((resolve) => {
-                          setTimeout(() => {
-                              resolve(true);
-                          }, 5000);
+                    : new Promise((resolve) => {
+                          newLongNoAction(), resolve(false);
                       }),
         }
     );
@@ -140,11 +140,19 @@ function newErrorAction() {
                     With Error Full
                 </button>
             </div>
-            <div class="placeholder">
-                <ModalContainer />
+
+            <div class="placeholder" v-if="!isMobile">
+                <p>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                    Ipsa delectus quos nam odio nulla tenetur ratione. Nam,
+                    eaque ipsa eveniet facilis illum voluptas nihil magni ipsum
+                    sit molestias quisquam fugiat!
+                </p>
+                <ModalContainer class="is-sub" />
             </div>
         </div>
     </div>
+    <ModalContainer v-if="isMobile" />
 </template>
 
 <style lang="scss">
@@ -158,7 +166,7 @@ function newErrorAction() {
 @include termeh.define-palette("primary", #0e8185);
 
 @include termeh.define("modal", "overlay-background", #090e23);
-@include termeh.define("modal", "overlay-opacity", 0.8);
+@include termeh.define("modal", "overlay-opacity", 0.65);
 @include termeh.define("modal", "overlay-filter", blur(2px));
 
 @include termeh.use-generic();

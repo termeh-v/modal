@@ -9,18 +9,15 @@ import { useCore } from "./useCore";
 /**
  * Creates the Vue plugin for the global modal system.
  *
- * It sets default options, provides the modal core instance, and optionally
- * registers the global `<ModalContainer>` component.
- *
- * @param options - Partial container options and an optional flag/name for the container component.
+ * @param options - Partial container options and an optional container component name or `false`.
+ * @returns Vue plugin object with an `install` method.
  */
 export function ModalPlugin(
     options: Partial<ContainerOption> & { container?: string | false } = {}
 ) {
     return {
         /**
-         * Installs the plugin into a Vue application instance.
-         *
+         * Install hook used by Vue when the plugin is applied to an app.
          * @param app - Vue application instance.
          */
         install(app: App) {
@@ -28,7 +25,7 @@ export function ModalPlugin(
             app.provide("$$modal_plugin", useCore());
 
             // Optionally register the global container component
-            if (options.container !== false) {
+            if (options.container) {
                 const name =
                     typeof options.container === "string"
                         ? options.container
@@ -45,11 +42,8 @@ export function ModalPlugin(
 
 /**
  * Component resolver for `unplugin-vue-components`.
- *
- * Enables auto-importing core modal components like `BaseModal` and `ModalContainer`
- * from the `@termeh-v/modal` package.
- *
- * @returns A function compatible with the `unplugin-vue-components` resolver type.
+ * Maps requested component names to exports from this package.
+ * @returns resolver function compatible with the plugin API.
  */
 export function ModalResolver(): ComponentResolverFunction {
     const components = ["BaseModal", "ModalContainer"];

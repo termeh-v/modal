@@ -1,3 +1,4 @@
+import { useMediaQueries } from "@termeh-v/composables";
 import { animate } from "motion";
 import {
     computed,
@@ -13,46 +14,38 @@ import {
     type CloseMode,
     type ModalAnimations,
 } from "./internal/types";
-import { useAttributes } from "./useAttribute";
+import { useAttributes } from "./useAttributes";
 import { injectCore } from "./useCore";
 
 /**
- * Composable to manage a single modal instance's lifecycle and interactions.
+ * Composable to manage a single modal instance lifecycle and interactions.
  *
- * It integrates with the global core, handles state (active/hidden, closing/loading),
- * animations, and manages user interactions (clicks, actions, close events).
+ * Returns reactive state and control functions used by the modal component.
  *
- * @param rootEl - The Vue `TemplateRef` bound to the modal's root DOM element.
- * @returns Reactive state and control methods for managing the modal.
+ * @param rootEl - TemplateRef to the modal's root DOM element.
  */
 export function useCreate(rootEl: TemplateRef) {
     const closing = ref(false);
     const loading = ref(false);
     const core = injectCore();
+    const { isMobile } = useMediaQueries();
     const { index, count, emitter, animations, options, attrs } =
         useAttributes();
     const animator = useAnimation(
         rootEl,
+        isMobile,
         computed(() => index.value < count.value - 3),
         closing,
         loading,
         animations
     );
 
-    /** Computed ref: `true` if this modal is the top-most (currently visible and interactive). */
     const isActive = computed(() => index.value === count.value - 1);
-    /** Computed ref: `true` if this modal is second from the top. */
     const isSecondary = computed(() => index.value === count.value - 2);
-    /** Computed ref: `true` if this modal is third from the top. */
     const isTertiary = computed(() => index.value === count.value - 3);
-    /** Computed ref: `true` if this modal is hidden behind many others (index < count - 3). */
     const isHidden = computed(() => index.value < count.value - 3);
 
-    /**
-     * Executes the close animation and removes the modal from the core system.
-     *
-     * @param mode - The reason/mode of closing.
-     */
+    /** Close the modal using the specified close mode. */
     function _close(mode: CloseMode) {
         if (emitter.value && options.value?.key) {
             emitter.value.emit("beforeRemove", options.value.key);
@@ -69,34 +62,33 @@ export function useCreate(rootEl: TemplateRef) {
             });
     }
 
-    /** Event handler: Triggers the `activate` animation if this modal is the target. */
+    /** Trigger activate animation when the event key matches. */
     function _onActivate(k?: string) {
         if (!k || k !== options.value?.key) return;
         animator.activate();
     }
 
-    /** Event handler: Triggers the `secondary` animation for stack transition. */
+    /** Trigger secondary animation when the event key matches. */
     function _onGoSecondary(k?: string) {
         if (!k || k !== options.value?.key) return;
         animator.secondary();
     }
 
-    /** Event handler: Triggers the `tertiary` animation for stack transition. */
+    /** Trigger tertiary animation when the event key matches. */
     function _onGoTertiary(k?: string) {
         if (!k || k !== options.value?.key) return;
         animator.tertiary();
     }
 
-    /** Event handler: Triggers the `hide` animation for stack transition. */
+    /** Trigger hide animation when the event key matches. */
     function _onHide(k?: string) {
         if (!k || k !== options.value?.key) return;
         animator.hide();
     }
 
     /**
-     * Handles click events, determining if closing or refusing should occur.
-     *
-     * @param target - The area clicked: 'modal' or 'overlay'.
+     * Handle click targeting the modal or overlay and possibly close it.
+     * @param target - area that was clicked ('modal'|'overlay')
      */
     function _onClick(target: ClickArea) {
         if (loading.value) return;
@@ -115,18 +107,16 @@ export function useCreate(rootEl: TemplateRef) {
                     }
                 })
                 .catch(() => (loading.value = false));
-        } else if (options.value?.closable === true) {
-            _close(mode);
         } else if (mode === "overlay") {
-            animator.refuse();
+            if (options.value?.closable === true) {
+                _close(mode);
+            } else {
+                animator.refuse();
+            }
         }
     }
 
-    /**
-     * Global document click handler to detect if the click occurred on the modal or overlay.
-     *
-     * @param e - The MouseEvent object.
-     */
+    /** Global click listener used to detect clicks on root element or dimmer. */
     function _handleClick(e: MouseEvent) {
         const el = toValue(rootEl) as HTMLElement;
         const dimmer = document.getElementById(
@@ -143,18 +133,13 @@ export function useCreate(rootEl: TemplateRef) {
         }
     }
 
-    /** Programmatically closes the modal using the 'manual' mode. */
+    /** Programmatically close modal (manual mode). */
     function close() {
         if (loading.value) return;
         _close("manual");
     }
 
-    /**
-     * Executes a user-defined action handler and conditionally closes the modal.
-     *
-     * @param key - Identifier for the action.
-     * @param data - Optional data payload for the action handler.
-     */
+    /** Execute an action handler and optionally close on success. */
     function action(key: string, data?: unknown) {
         if (!options.value?.onAction || loading.value) return;
         loading.value = true;
@@ -210,36 +195,37 @@ export function useCreate(rootEl: TemplateRef) {
 }
 
 /**
- * Composable dedicated to running all modal transition animations using the `motion` library.
+ * Animation helper that runs motion-based transitions for a modal element.
  *
- * @param element - The `TemplateRef` for the DOM element to animate.
- * @param hidden - A ref/getter indicating if the modal is deep in the stack (and should skip simple animations).
- * @param closing - A ref/getter indicating if the modal is currently being closed.
- * @param loading - A ref/getter indicating if the modal is busy/loading.
- * @param animations - A ref/getter for the animation definitions.
- * @returns An object with methods for all defined modal animations.
+ * Exposes methods: enter, refuse, leave, activate, secondary, tertiary, hide.
  */
 function useAnimation(
     element: TemplateRef,
+    mobile: MaybeRefOrGetter<boolean>,
     hidden: MaybeRefOrGetter<boolean>,
     closing: MaybeRefOrGetter<boolean>,
     loading: MaybeRefOrGetter<boolean>,
     animations: MaybeRefOrGetter<ModalAnimations | undefined>
 ) {
     const unrefEl = () => toValue(element) as HTMLElement;
+    const isMobile = () => toValue(mobile) === true;
     const isHidden = () => toValue(hidden) === true;
     const isClosing = () => toValue(closing) === true;
     const isLoading = () => toValue(loading) === true;
     const unrefAnim = () => toValue(animations);
 
-    /** Runs the **enter** animation when the modal is mounted. */
+    /** Run the enter animation when the modal mounts. Resolves with status. */
     function enter() {
         if (isClosing()) return;
 
         const el = unrefEl();
         const anim = unrefAnim();
-        const params = anim?.enter?.params || { opacity: [0, 1] };
-        const options = anim?.enter?.options || { duration: 0.2 };
+        const params = (isMobile()
+            ? anim?.mobileEnter?.params
+            : anim?.enter?.params) || { opacity: [0, 1] };
+        const options = (isMobile()
+            ? anim?.mobileEnter?.options
+            : anim?.enter?.options) || { duration: 0.2 };
 
         return new Promise<"ignored" | "done" | "error">((resolve) => {
             if (!el || isHidden()) {
@@ -252,14 +238,18 @@ function useAnimation(
         });
     }
 
-    /** Runs the **refuse** (shake/bounce) animation, typically on an invalid overlay click. */
+    /** Run the refuse animation (shake/bounce) and resolve with status. */
     function refuse() {
         if (isHidden() || isClosing() || isLoading()) return;
 
         const el = unrefEl();
         const anim = unrefAnim();
-        const params = anim?.refuse?.params || { scale: [1, 1.2] };
-        const options = anim?.refuse?.options || { duration: 0.2 };
+        const params = (isMobile()
+            ? anim?.mobileRefuse?.params
+            : anim?.refuse?.params) || { opacity: [0, 1] };
+        const options = (isMobile()
+            ? anim?.mobileRefuse?.options
+            : anim?.refuse?.options) || { duration: 0.2 };
 
         return new Promise<"ignored" | "done" | "error">((resolve) => {
             if (!el) {
@@ -276,14 +266,18 @@ function useAnimation(
         });
     }
 
-    /** Runs the **leave** animation before the modal is unmounted. */
+    /** Run the leave animation before the modal is removed. Calls `before` prior to animating. */
     function leave(before?: () => void) {
         if (isClosing()) return;
 
         const el = unrefEl();
         const anim = unrefAnim();
-        const params = anim?.leave?.params || { opacity: [1, 0] };
-        const options = anim?.leave?.options || { duration: 0.2 };
+        const params = (isMobile()
+            ? anim?.mobileLeave?.params
+            : anim?.leave?.params) || { opacity: [0, 1] };
+        const options = (isMobile()
+            ? anim?.mobileLeave?.options
+            : anim?.leave?.options) || { duration: 0.2 };
 
         return new Promise<"ignored" | "done" | "error">((resolve) => {
             if (!el || isHidden()) {
@@ -297,7 +291,7 @@ function useAnimation(
         });
     }
 
-    /** Runs the **activate** animation, restoring a modal to the active (top) state. */
+    /** Run the activate animation to restore modal to active/top state. */
     function activate() {
         if (isClosing()) return;
 
@@ -325,7 +319,7 @@ function useAnimation(
         });
     }
 
-    /** Runs the **secondary** animation, moving the modal back one layer. */
+    /** Run the secondary animation to move the modal back one layer. */
     function secondary() {
         if (isClosing()) return;
 
@@ -354,7 +348,7 @@ function useAnimation(
         });
     }
 
-    /** Runs the **tertiary** animation, moving the modal back two layers. */
+    /** Run the tertiary animation to move the modal back two layers. */
     function tertiary() {
         if (isClosing()) return;
 
@@ -383,7 +377,7 @@ function useAnimation(
         });
     }
 
-    /** Runs the **hide** animation, pushing the modal far back or hiding it. */
+    /** Run the hide animation to push the modal far back or make it invisible. */
     function hide() {
         if (isClosing()) return;
 
@@ -411,13 +405,5 @@ function useAnimation(
         });
     }
 
-    return {
-        enter,
-        refuse,
-        leave,
-        activate,
-        secondary,
-        tertiary,
-        hide,
-    };
+    return { enter, refuse, leave, activate, secondary, tertiary, hide };
 }
