@@ -13,6 +13,7 @@ import {
     type ClickArea,
     type CloseMode,
     type ModalAnimations,
+    type ModalState,
 } from "./internal/types";
 import { useAttributes } from "./useAttributes";
 import { injectCore } from "./useCore";
@@ -28,15 +29,13 @@ export function useCreate(rootEl: TemplateRef) {
     const closing = ref(false);
     const loading = ref(false);
     const core = injectCore();
-    const { isMobile } = useMediaQueries();
     const { index, count, emitter, animations, options, attrs } =
         useAttributes();
     const animator = useAnimation(
         rootEl,
-        isMobile,
-        computed(() => index.value < count.value - 3),
         closing,
         loading,
+        computed(() => index.value < count.value - 3),
         animations
     );
 
@@ -48,7 +47,7 @@ export function useCreate(rootEl: TemplateRef) {
     /** Close the modal using the specified close mode. */
     function _close(mode: CloseMode) {
         if (emitter.value && options.value?.key) {
-            emitter.value.emit("beforeRemove", options.value.key);
+            emitter.value.emit("removing", options.value.key);
         }
 
         animator
@@ -60,30 +59,6 @@ export function useCreate(rootEl: TemplateRef) {
                     options.value?.identifier || ""
                 );
             });
-    }
-
-    /** Trigger activate animation when the event key matches. */
-    function _onActivate(k?: string) {
-        if (!k || k !== options.value?.key) return;
-        animator.activate();
-    }
-
-    /** Trigger secondary animation when the event key matches. */
-    function _onGoSecondary(k?: string) {
-        if (!k || k !== options.value?.key) return;
-        animator.secondary();
-    }
-
-    /** Trigger tertiary animation when the event key matches. */
-    function _onGoTertiary(k?: string) {
-        if (!k || k !== options.value?.key) return;
-        animator.tertiary();
-    }
-
-    /** Trigger hide animation when the event key matches. */
-    function _onHide(k?: string) {
-        if (!k || k !== options.value?.key) return;
-        animator.hide();
     }
 
     /**
@@ -113,6 +88,19 @@ export function useCreate(rootEl: TemplateRef) {
             } else {
                 animator.refuse();
             }
+        }
+    }
+
+    /** Trigger state animation when modal state changed. */
+    function _onStateChange(mode: ModalState) {
+        if (mode === "activate") {
+            animator.activate();
+        } else if (mode === "secondary") {
+            animator.secondary();
+        } else if (mode === "tertiary") {
+            animator.tertiary();
+        } else if (mode === "hide") {
+            animator.hide();
         }
     }
 
@@ -164,19 +152,17 @@ export function useCreate(rootEl: TemplateRef) {
 
         // Setup global listeners
         document.addEventListener("click", _handleClick);
-        emitter.value?.on("activate", _onActivate);
-        emitter.value?.on("hide", _onHide);
-        emitter.value?.on("goSecondary", _onGoSecondary);
-        emitter.value?.on("goTertiary", _onGoTertiary);
+        if (options.value?.identifier) {
+            emitter.value?.on(options.value?.identifier, _onStateChange);
+        }
     });
 
     onUnmounted(() => {
         // Cleanup global listeners
         document.removeEventListener("click", _handleClick);
-        emitter.value?.off("activate", _onActivate);
-        emitter.value?.off("hide", _onHide);
-        emitter.value?.off("goSecondary", _onGoSecondary);
-        emitter.value?.off("goTertiary", _onGoTertiary);
+        if (options.value?.identifier) {
+            emitter.value?.off(options.value?.identifier, _onStateChange);
+        }
     });
 
     return {
@@ -201,14 +187,13 @@ export function useCreate(rootEl: TemplateRef) {
  */
 function useAnimation(
     element: TemplateRef,
-    mobile: MaybeRefOrGetter<boolean>,
-    hidden: MaybeRefOrGetter<boolean>,
     closing: MaybeRefOrGetter<boolean>,
     loading: MaybeRefOrGetter<boolean>,
+    hidden: MaybeRefOrGetter<boolean>,
     animations: MaybeRefOrGetter<ModalAnimations | undefined>
 ) {
+    const { isMobile } = useMediaQueries();
     const unrefEl = () => toValue(element) as HTMLElement;
-    const isMobile = () => toValue(mobile) === true;
     const isHidden = () => toValue(hidden) === true;
     const isClosing = () => toValue(closing) === true;
     const isLoading = () => toValue(loading) === true;
@@ -220,10 +205,10 @@ function useAnimation(
 
         const el = unrefEl();
         const anim = unrefAnim();
-        const params = (isMobile()
+        const params = (isMobile.value
             ? anim?.mobileEnter?.params
             : anim?.enter?.params) || { opacity: [0, 1] };
-        const options = (isMobile()
+        const options = (isMobile.value
             ? anim?.mobileEnter?.options
             : anim?.enter?.options) || { duration: 0.2 };
 
@@ -244,10 +229,10 @@ function useAnimation(
 
         const el = unrefEl();
         const anim = unrefAnim();
-        const params = (isMobile()
+        const params = (isMobile.value
             ? anim?.mobileRefuse?.params
             : anim?.refuse?.params) || { opacity: [0, 1] };
-        const options = (isMobile()
+        const options = (isMobile.value
             ? anim?.mobileRefuse?.options
             : anim?.refuse?.options) || { duration: 0.2 };
 
@@ -272,10 +257,10 @@ function useAnimation(
 
         const el = unrefEl();
         const anim = unrefAnim();
-        const params = (isMobile()
+        const params = (isMobile.value
             ? anim?.mobileLeave?.params
             : anim?.leave?.params) || { opacity: [0, 1] };
-        const options = (isMobile()
+        const options = (isMobile.value
             ? anim?.mobileLeave?.options
             : anim?.leave?.options) || { duration: 0.2 };
 

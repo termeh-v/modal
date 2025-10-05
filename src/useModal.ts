@@ -1,7 +1,8 @@
+import Simple from "./components/Simple.vue";
+
 import { mergeConfig } from "@termeh-v/utils";
 import { customAlphabet } from "nanoid";
 import { markRaw, type Component } from "vue";
-import Simple from "./components/Simple.vue";
 import { getDefaultOptions } from "./internal/options";
 import { type ModalOption } from "./internal/types";
 import { injectCore } from "./useCore";

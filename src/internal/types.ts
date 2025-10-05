@@ -7,6 +7,14 @@ export type ClickArea = "modal" | "overlay";
 /** Mode in which a modal was closed. */
 export type CloseMode = "manual" | "click" | "overlay" | "action";
 
+/** Union of event values supported by the core emitter. */
+export type ModalState =
+    | "activate"
+    | "secondary"
+    | "tertiary"
+    | "hide"
+    | string;
+
 /** Handler called when a modal opens. */
 export type OpenHandler = () => void;
 
@@ -103,18 +111,9 @@ export interface Modal extends ModalOption {
 /** Events emitted by the modal system. Values are modal identifiers. */
 export type EmitterEvent = {
     /** Modal was **added** to the stack. */
-    added?: string;
+    added: string;
     /** Modal is about to be **removed**. */
-    beforeRemove?: string;
-    /** Activate the modal's **secondary** state. */
-    activate?: string;
-    /** Transition **back** to the primary/main view. */
-    hide?: string;
-    /** Transition from **primary to secondary** view. */
-    goSecondary?: string;
-    /** Transition from **secondary to tertiary** view. */
-    goTertiary?: string;
+    removing: string;
+    /** modal state change. */
+    [key: string]: ModalState;
 };
-
-/** Union of event names supported by the core emitter. */
-export type ModalCoreEvent = keyof EmitterEvent;

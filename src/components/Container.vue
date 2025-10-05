@@ -31,22 +31,22 @@ function onAdd(k?: string) {
 
     if (modals.value.length > 1) {
         const modal = modals.value[modals.value.length - 2];
-        if (modal && modal.key) {
-            emitter.emit("goSecondary", modal.key);
+        if (modal && modal.identifier) {
+            emitter.emit(modal.identifier, "secondary");
         }
     }
 
     if (modals.value.length > 2) {
         const modal = modals.value[modals.value.length - 3];
-        if (modal && modal.key) {
-            emitter.emit("goTertiary", modal.key);
+        if (modal && modal.identifier) {
+            emitter.emit(modal.identifier, "tertiary");
         }
     }
 
     if (modals.value.length > 3) {
         const modal = modals.value[modals.value.length - 4];
-        if (modal && modal.key) {
-            emitter.emit("hide", modal.key);
+        if (modal && modal.identifier) {
+            emitter.emit(modal.identifier, "hide");
         }
     }
 }
@@ -61,34 +61,34 @@ function onRemove(k?: string) {
 
     if (modals.value.length > 1) {
         const modal = modals.value[modals.value.length - 2];
-        if (modal && modal.key) {
-            emitter.emit("activate", modal.key);
+        if (modal && modal.identifier) {
+            emitter.emit(modal.identifier, "activate");
         }
     }
 
     if (modals.value.length > 2) {
         const modal = modals.value[modals.value.length - 3];
-        if (modal && modal.key) {
-            emitter.emit("goSecondary", modal.key);
+        if (modal && modal.identifier) {
+            emitter.emit(modal.identifier, "secondary");
         }
     }
 
     if (modals.value.length > 3) {
         const modal = modals.value[modals.value.length - 4];
-        if (modal && modal.key) {
-            emitter.emit("goTertiary", modal.key);
+        if (modal && modal.identifier) {
+            emitter.emit(modal.identifier, "tertiary");
         }
     }
 }
 
 onMounted(() => {
     emitter.on("added", onAdd);
-    emitter.on("beforeRemove", onRemove);
+    emitter.on("removing", onRemove);
 });
 
 onUnmounted(() => {
     emitter.off("added", onAdd);
-    emitter.off("beforeRemove", onRemove);
+    emitter.off("removing", onRemove);
 });
 </script>
 <template>

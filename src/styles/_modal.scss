@@ -19,6 +19,9 @@
     $radius: termeh.var("modal", "radius", $fallback-radius);
     $padding: termeh.var("modal", "padding", $fallback-padding);
 
+    $sheet-shadow: termeh.var("bottom-sheet", "shadow", $shadow);
+    $sheet-radius: termeh.var("bottom-sheet", "radius", $radius);
+
     $decorator: termeh.var("decorator", "size", 2px);
     $gap-micro: termeh.var("gap", "micro", 8px);
     $line-height: termeh.var("line-height", "normal", 1.6em);
@@ -92,7 +95,7 @@
                     z-index: -1;
                     background: linear-gradient(
                         to bottom,
-                        $background,
+                        rgba($background, 0.65),
                         transparent
                     );
                     @include termeh.transition(height);
@@ -161,7 +164,7 @@
                     z-index: -1;
                     background: linear-gradient(
                         to top,
-                        $background,
+                        rgba($background, 0.65),
                         transparent
                     );
                     @include termeh.transition(height);
@@ -286,13 +289,18 @@
         }
 
         @include termeh.mobile() {
-            padding: $padding * 2 termeh.half($gap-micro) 0;
+            padding: $padding * 2 0 0;
 
             .modal {
+                box-shadow: $sheet-shadow;
+                border-radius: $sheet-radius;
                 border-bottom-left-radius: 0;
                 border-bottom-right-radius: 0;
 
                 .modal-header {
+                    border-top-left-radius: $sheet-radius;
+                    border-top-right-radius: $sheet-radius;
+
                     &.is-empty {
                         background: $background;
                     }

@@ -166,8 +166,15 @@ function newErrorAction() {
 @include termeh.define-palette("primary", #0e8185);
 
 @include termeh.define("modal", "overlay-background", #090e23);
-@include termeh.define("modal", "overlay-opacity", 0.65);
+@include termeh.define("modal", "overlay-opacity", 0.45);
 @include termeh.define("modal", "overlay-filter", blur(2px));
+
+@include termeh.define("bottom-sheet", "radius", 1rem);
+@include termeh.define(
+    "bottom-sheet",
+    "shadow",
+    (0 -3px 10px -7px rgba(0, 0, 0, 0.2))
+);
 
 @include termeh.use-generic();
 @include termeh.use-container();
@@ -212,7 +219,8 @@ body {
 }
 
 .example .placeholder {
-    height: 40rem;
+    height: 45rem;
+    padding: 2rem;
     position: relative;
     border-radius: 2px;
     background: #eeeef5;
