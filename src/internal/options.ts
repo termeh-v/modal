@@ -1,7 +1,11 @@
 import { mergeConfig, type DeepPartial } from "@termeh-v/utils";
 import type { ContainerOption } from "./types";
 
-/** Default container options used when creating modals/containers. */
+/**
+ * Default container options used when no per-container options are supplied.
+ *
+ * This value can be mutated via `setDefaultOptions`.
+ */
 let defaultOptions: ContainerOption = {
     closable: true,
     animations: {
@@ -29,12 +33,32 @@ let defaultOptions: ContainerOption = {
             params: { opacity: [1, 0], translateY: [0, "30%"] },
             options: { duration: 0.1, ease: "easeOut" },
         },
+        activate: {
+            params: { top: 0, bottom: 0, scale: 1, opacity: 1 },
+            options: { duration: 0.2, ease: "easeOut" },
+        },
+        secondary: {
+            params: { top: -8, bottom: "3rem", scale: 0.9, opacity: 0.9 },
+            options: { duration: 0.2, type: "spring", stiffness: 150 },
+        },
+        tertiary: {
+            params: { top: -16, bottom: "3rem", scale: 0.8, opacity: 0.8 },
+            options: { duration: 0.2, type: "spring", stiffness: 150 },
+        },
+        hide: {
+            params: { top: 0, bottom: "3rem", scale: 0.7, opacity: 0 },
+            options: { duration: 0.2, ease: "easeOut" },
+        },
     },
 };
 
 /**
- * Merge and set the default container options.
- * @param option - Partial options to merge into defaults.
+ * Update the global default container options by deep-merging the provided partial.
+ *
+ * Certain animation subpaths are configured to be replaced instead of merged to
+ * simplify overriding full animation definitions.
+ *
+ * @param option - Partial container option overrides.
  */
 export function setDefaultOptions(option: DeepPartial<ContainerOption>) {
     defaultOptions = mergeConfig(defaultOptions, option, {
@@ -62,8 +86,9 @@ export function setDefaultOptions(option: DeepPartial<ContainerOption>) {
 }
 
 /**
- * Get the current default container options.
- * @returns The active ContainerOption object.
+ * Return the currently configured default container options.
+ *
+ * @returns The effective ContainerOption used as the base configuration.
  */
 export function getDefaultOptions(): ContainerOption {
     return defaultOptions;

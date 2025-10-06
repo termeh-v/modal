@@ -7,18 +7,20 @@ import { type ContainerOption } from "./internal/types";
 import { useCore } from "./useCore";
 
 /**
- * Creates the Vue plugin for the global modal system.
+ * Create a Vue plugin that installs the modal core and optionally registers
+ * a global container component.
  *
- * @param options - Partial container options and an optional container component name or `false`.
- * @returns Vue plugin object with an `install` method.
+ * @param options - Partial container options and an optional `container` name or `false` to disable auto-registration.
+ * @returns A Vue plugin object exposing an `install` method.
  */
 export function ModalPlugin(
     options: Partial<ContainerOption> & { container?: string | false } = {}
 ) {
     return {
         /**
-         * Install hook used by Vue when the plugin is applied to an app.
-         * @param app - Vue application instance.
+         * Vue install hook called when the plugin is registered with an app.
+         *
+         * @param app - Vue application instance where the plugin will be installed.
          */
         install(app: App) {
             // Provide the core modal management instance
@@ -33,7 +35,7 @@ export function ModalPlugin(
                 app.component(name, Container);
             }
 
-            // Set global default options
+            // Apply passed defaults to the global default options
             const { container, ...rest } = options;
             setDefaultOptions(rest);
         },
@@ -41,9 +43,10 @@ export function ModalPlugin(
 }
 
 /**
- * Component resolver for `unplugin-vue-components`.
- * Maps requested component names to exports from this package.
- * @returns resolver function compatible with the plugin API.
+ * Create a resolver for `unplugin-vue-components` that maps component names
+ * to this package so tools can auto-import `BaseModal` and `ModalContainer`.
+ *
+ * @returns A component resolver function usable by the plugin.
  */
 export function ModalResolver(): ComponentResolverFunction {
     const components = ["BaseModal", "ModalContainer"];

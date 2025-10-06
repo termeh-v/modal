@@ -2,6 +2,48 @@
 @use "./styles/container";
 @use "./styles/modal";
 
+/**
+ * @mixin use-modal
+ * @param {List|null} $colors [null]
+ * @param {Map|null} $sizes [null]
+ *
+ * Include this mixin to add modal styles and optional color and sizes variants.
+ *
+ * Termeh tokens used by use-modal:
+ *
+ * @termeh {Color} [theme default] - var("overlay", "background") -> overlay color for the backdrop
+ * @termeh {Number} [1] - var("overlay", "opacity", 1) -> overlay opacity
+ * @termeh {Filter} [none] - var("overlay", "filter", none) -> overlay backdrop-filter
+ * @termeh {Color} [overlay fallback] - var("modal", "overlay-background", var("overlay", "background")) -> modal overlay color override
+ * @termeh {Number} [overlay fallback] - var("modal", "overlay-opacity", var("overlay", "opacity", 1)) -> modal overlay opacity override
+ * @termeh {Filter} [overlay fallback] - var("modal", "overlay-filter", var("overlay", "filter", none)) -> modal overlay filter override
+ * @termeh {Integer} [99] - var("z-index", "modal", 99) -> `.modal-dimmer` z-index
+ * 
+ * @termeh {Color} [white] - var("base", "color", white) -> modal background fallback
+ * @termeh {Color} [black] - var("base", "foreground", black) -> modal text color fallback
+ * @termeh {Color} [#e0e4eb] - var("base", "separator", #e0e4eb) -> separator/border color
+ * @termeh {Length} [theme default] - var("radius", "normal") -> base border-radius
+ * @termeh {Length} [1.6em] - var("gap", "macro", 1.6em) -> main spacing / modal padding
+ * 
+ * @termeh {Length} [radius.normal] - var("modal", "radius", var("radius", "normal")) -> modal radius override
+ * @termeh {Length} [gap.macro] - var("modal", "padding", var("gap", "macro", 1.6em)) -> modal internal padding
+ * @termeh {Color} [base.color] - var("modal", "background", var("base", "color", white)) -> modal background override
+ * @termeh {Color} [base.foreground] - var("modal", "foreground", var("base", "foreground", black)) -> modal foreground override
+ * @termeh {Color} [base.separator] - var("modal", "separator", var("base", "separator", #e0e4eb)) -> modal separator override
+ * @termeh {BoxShadow} [none] - var("modal", "shadow", none) -> modal box-shadow
+ * 
+ * @termeh {BoxShadow} [modal.shadow] - var("bottom-sheet", "shadow", var("modal", "shadow", none)) -> bottom-sheet shadow
+ * @termeh {Length} [modal.radius] - var("bottom-sheet", "radius", var("modal", "radius", var("radius", "normal"))) -> bottom-sheet radius
+ * 
+ * @termeh {Length} [2px] - var("decorator", "size", 2px) -> loader/decorator size
+ * @termeh {Length} [8px] - var("gap", "micro", 8px) -> small gap
+ * @termeh {Length} [1.6em] - var("line-height", "normal", 1.6em) -> default line-height
+ * 
+ * @termeh {Color} [theme primary color] - color("primary") -> primary action color
+ * @termeh {Color} [computed readable color] - variant("primary", "foreground") -> primary action text color
+ * @termeh {Map<String,Color>} [theme colors map] - colors($colors) -> map of named theme colors for `.is-<color>` variants
+ *
+ */
 @mixin use-modal($colors: null, $sizes: null) {
     @if not termeh.module-presented("modal") {
         @include termeh.require("modal", "icon");

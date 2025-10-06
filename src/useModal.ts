@@ -8,11 +8,9 @@ import { type ModalOption } from "./internal/types";
 import { injectCore } from "./useCore";
 
 /**
- * Composable that provides helpers to create modal instances programmatically.
+ * Helpers to create modal instances programmatically.
  *
- * Methods:
- *  - create: create a modal from a custom component
- *  - simple: create a simple text modal using the bundled `Simple` component
+ * Provides `create` for custom components and `simple` for a basic message modal.
  */
 export function useModal() {
     const core = injectCore();
@@ -21,11 +19,12 @@ export function useModal() {
     );
 
     /**
-     * Create & register a new modal instance with a custom component.
-     * @template Props - props type passed to the component
-     * @param component - Vue component to render inside the modal
-     * @param props - Props for the component
-     * @param options - Partial modal options
+     * Create and register a modal instance rendering a provided component.
+     *
+     * @template Props - Props shape forwarded to the rendered component.
+     * @param component - Vue component to render inside the modal.
+     * @param props - Props to pass to the component.
+     * @param options - Partial modal options (container, callbacks, etc.).
      */
     function create<Props extends Record<string, unknown>>(
         component: Component,
@@ -63,9 +62,10 @@ export function useModal() {
     }
 
     /**
-     * Create a simple text modal using the built-in `Simple` component.
-     * @param message - main message text
-     * @param options - optional modal options and labels
+     * Create a simple message modal using the built-in `Simple` component.
+     *
+     * @param message - Main content message for the modal.
+     * @param options - Optional modal options and label overrides.
      */
     function simple(
         message: string,
