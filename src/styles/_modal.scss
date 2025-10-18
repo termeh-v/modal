@@ -30,289 +30,291 @@
     $primary-readable: color.mix($foreground, $primary, 20%);
     $primary-foreground: termeh.variant("primary", "foreground");
 
-    .modal-item {
-        display: block;
-        max-width: 100%;
-        padding: $padding;
-        position: relative;
-        box-sizing: border-box;
-        @include termeh.transition(all);
-
-        .modal {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            position: relative;
-            border-radius: $radius;
-            color: $foreground;
-            background: $background;
-            box-shadow: $shadow;
+    @at-root {
+        .modal-item {
+            display: block;
             max-width: 100%;
+            padding: $padding;
+            position: relative;
+            box-sizing: border-box;
+            @include termeh.transition(all);
 
-            .modal-content {
-                z-index: 1;
-                display: block;
-                padding: $padding;
+            .modal {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
                 position: relative;
-            }
-
-            .modal-header {
-                display: flex;
-                flex-direction: column;
-                align-items: stretch;
-                position: sticky;
-                top: 0;
-                z-index: 2;
+                border-radius: $radius;
+                color: $foreground;
                 background: $background;
-                border-top-left-radius: $radius;
-                border-top-right-radius: $radius;
+                box-shadow: $shadow;
+                max-width: 100%;
 
-                .modal-handle {
-                    display: none;
-                    align-items: center;
-                    justify-content: center;
-                    padding: $gap-micro;
-                    touch-action: none !important;
-
-                    div {
-                        display: block;
-                        border-radius: 9999px;
-                        background: $separator;
-                        width: 4rem;
-                        height: 4px;
-                    }
-                }
-
-                .scroll-fade {
-                    display: block;
-                    position: absolute;
-                    overflow: hidden;
-                    left: 0;
-                    right: 0;
-                    top: 100%;
-                    width: 100%;
-                    height: 0;
-                    z-index: -1;
-                    background: linear-gradient(
-                        to bottom,
-                        rgba($background, 0.65),
-                        transparent
-                    );
-                    @include termeh.transition(height);
-
-                    @at-root {
-                        .modal-dimmer.is-top-scrolled #{&} {
-                            height: $padding * 4;
-                        }
-                    }
-                }
-
-                .modal-header-content {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
+                .modal-content {
                     z-index: 1;
-                    gap: $gap-micro;
-                    padding: 1em $padding;
-                    border-bottom: 1px solid $separator;
-
-                    h6 {
-                        flex: 1;
-                        font-size: 1em;
-                        font-weight: 500;
-                        line-height: $line-height;
-                        @include termeh.marginless();
-                    }
-
-                    .icon {
-                        flex: none;
-                        cursor: pointer;
-
-                        &:hover {
-                            transform: scale(1.2);
-                        }
-                    }
+                    display: block;
+                    padding: $padding;
+                    position: relative;
                 }
 
-                &.is-empty {
-                    .modal-header-content {
+                .modal-header {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: stretch;
+                    position: sticky;
+                    top: 0;
+                    z-index: 2;
+                    background: $background;
+                    border-top-left-radius: $radius;
+                    border-top-right-radius: $radius;
+
+                    .modal-handle {
                         display: none;
-                    }
-                }
-            }
-
-            .modal-actions {
-                display: flex;
-                flex-direction: column;
-                align-items: stretch;
-                position: sticky;
-                bottom: 0;
-                z-index: 2;
-                background: $background;
-                border-bottom-left-radius: $radius;
-                border-bottom-right-radius: $radius;
-
-                .scroll-fade {
-                    display: block;
-                    position: absolute;
-                    overflow: hidden;
-                    left: 0;
-                    right: 0;
-                    bottom: 100%;
-                    width: 100%;
-                    height: 0;
-                    z-index: -1;
-                    background: linear-gradient(
-                        to top,
-                        rgba($background, 0.65),
-                        transparent
-                    );
-                    @include termeh.transition(height);
-
-                    @at-root {
-                        .modal-dimmer.is-bottom-scrolled #{&} {
-                            height: $padding * 4;
-                        }
-                    }
-                }
-
-                .modal-actions-content {
-                    display: flex;
-                    flex-direction: row;
-                    align-items: center;
-                    justify-content: flex-end;
-                    z-index: 1;
-                    gap: $gap-micro;
-                    padding: 1em $padding;
-                    border-top: 1px solid $separator;
-
-                    .modal-action {
-                        @include termeh.control();
-                        display: flex;
                         align-items: center;
                         justify-content: center;
-                        position: relative;
-                        cursor: pointer;
-                        text-align: center;
-                        width: auto;
-                        white-space: nowrap;
-                        text-decoration: none;
-                        border-radius: $radius;
-                        text-overflow: ellipsis;
-                        padding: termeh.inline-padding();
-                        @include termeh.transition(all);
-                        @include termeh.unselectable();
+                        padding: $gap-micro;
+                        touch-action: none !important;
 
-                        &:hover {
-                            text-decoration: none;
-                            transform: scale(1.05);
+                        div {
+                            display: block;
+                            border-radius: 9999px;
+                            background: $separator;
+                            width: 4rem;
+                            height: 4px;
                         }
+                    }
 
-                        &:not(.is-secondary) {
-                            color: $primary-foreground;
-                            background-color: rgba($primary, 0.65);
+                    .scroll-fade {
+                        display: block;
+                        position: absolute;
+                        overflow: hidden;
+                        left: 0;
+                        right: 0;
+                        top: 100%;
+                        width: 100%;
+                        height: 0;
+                        z-index: -1;
+                        background: linear-gradient(
+                            to bottom,
+                            rgba($background, 0.65),
+                            transparent
+                        );
+                        @include termeh.transition(height);
 
-                            &:hover {
-                                background-color: $primary;
+                        @at-root {
+                            .modal-dimmer.is-top-scrolled #{&} {
+                                height: $padding * 4;
                             }
                         }
+                    }
 
-                        &.is-secondary {
+                    .modal-header-content {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        z-index: 1;
+                        gap: $gap-micro;
+                        padding: 1em $padding;
+                        border-bottom: 1px solid $separator;
+
+                        h6 {
+                            flex: 1;
+                            font-size: 1em;
+                            font-weight: 500;
+                            line-height: $line-height;
+                            @include termeh.marginless();
+                        }
+
+                        .icon {
+                            flex: none;
+                            cursor: pointer;
+
                             &:hover {
-                                background-color: rgba($foreground, 0.1);
+                                transform: scale(1.2);
                             }
+                        }
+                    }
+
+                    &.is-empty {
+                        .modal-header-content {
+                            display: none;
                         }
                     }
                 }
 
-                &.is-empty {
+                .modal-actions {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: stretch;
+                    position: sticky;
+                    bottom: 0;
+                    z-index: 2;
+                    background: $background;
+                    border-bottom-left-radius: $radius;
+                    border-bottom-right-radius: $radius;
+
+                    .scroll-fade {
+                        display: block;
+                        position: absolute;
+                        overflow: hidden;
+                        left: 0;
+                        right: 0;
+                        bottom: 100%;
+                        width: 100%;
+                        height: 0;
+                        z-index: -1;
+                        background: linear-gradient(
+                            to top,
+                            rgba($background, 0.65),
+                            transparent
+                        );
+                        @include termeh.transition(height);
+
+                        @at-root {
+                            .modal-dimmer.is-bottom-scrolled #{&} {
+                                height: $padding * 4;
+                            }
+                        }
+                    }
+
                     .modal-actions-content {
-                        display: none;
-                    }
-                }
-            }
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        justify-content: flex-end;
+                        z-index: 1;
+                        gap: $gap-micro;
+                        padding: 1em $padding;
+                        border-top: 1px solid $separator;
 
-            &.is-loading {
-                @include termeh.loader($line-height, $primary, $decorator);
-
-                > * {
-                    opacity: 0;
-                }
-            }
-
-            @each $name, $size in $sizes {
-                &.is-#{$name} {
-                    width: $size;
-                }
-            }
-
-            @each $name, $color in termeh.colors($colors) {
-                &.is-#{$name} {
-                    $-readable: color.mix($foreground, $color, 20%);
-                    $-foreground: termeh.variant($name, "foreground");
-
-                    > .modal-actions {
                         .modal-action {
+                            @include termeh.control();
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            position: relative;
+                            cursor: pointer;
+                            text-align: center;
+                            width: auto;
+                            white-space: nowrap;
+                            text-decoration: none;
+                            border-radius: $radius;
+                            text-overflow: ellipsis;
+                            padding: termeh.inline-padding();
+                            @include termeh.transition(all);
+                            @include termeh.unselectable();
+
+                            &:hover {
+                                text-decoration: none;
+                                transform: scale(1.05);
+                            }
+
                             &:not(.is-secondary) {
-                                color: $-foreground;
-                                background-color: rgba($color, 0.65);
+                                color: $primary-foreground;
+                                background-color: rgba($primary, 0.65);
 
                                 &:hover {
-                                    background-color: $color;
+                                    background-color: $primary;
+                                }
+                            }
+
+                            &.is-secondary {
+                                &:hover {
+                                    background-color: rgba($foreground, 0.1);
                                 }
                             }
                         }
                     }
 
-                    &.is-loading {
-                        @include termeh.loader-color($color);
-                    }
-                }
-            }
-        }
-
-        &.is-hidden {
-            position: absolute;
-            overflow: hidden;
-            top: 0;
-            bottom: $padding * 2;
-
-            .modal {
-                overflow: hidden;
-                background: $background;
-                transform-origin: top center;
-
-                > * {
-                    opacity: 0;
-                }
-            }
-        }
-
-        @include termeh.mobile() {
-            padding: $padding * 2 0 0;
-
-            .modal {
-                box-shadow: $sheet-shadow;
-                border-radius: $sheet-radius;
-                border-bottom-left-radius: 0;
-                border-bottom-right-radius: 0;
-
-                .modal-header {
-                    border-top-left-radius: $sheet-radius;
-                    border-top-right-radius: $sheet-radius;
-
                     &.is-empty {
-                        background: $background;
-                    }
-
-                    .modal-handle {
-                        display: flex;
+                        .modal-actions-content {
+                            display: none;
+                        }
                     }
                 }
 
-                .modal-actions {
+                &.is-loading {
+                    @include termeh.loader($line-height, $primary, $decorator);
+
+                    > * {
+                        opacity: 0;
+                    }
+                }
+
+                @each $name, $size in $sizes {
+                    &.is-#{$name} {
+                        width: $size;
+                    }
+                }
+
+                @each $name, $color in termeh.colors($colors) {
+                    &.is-#{$name} {
+                        $-readable: color.mix($foreground, $color, 20%);
+                        $-foreground: termeh.variant($name, "foreground");
+
+                        > .modal-actions {
+                            .modal-action {
+                                &:not(.is-secondary) {
+                                    color: $-foreground;
+                                    background-color: rgba($color, 0.65);
+
+                                    &:hover {
+                                        background-color: $color;
+                                    }
+                                }
+                            }
+                        }
+
+                        &.is-loading {
+                            @include termeh.loader-color($color);
+                        }
+                    }
+                }
+            }
+
+            &.is-hidden {
+                position: absolute;
+                overflow: hidden;
+                top: 0;
+                bottom: $padding * 2;
+
+                .modal {
+                    overflow: hidden;
+                    background: $background;
+                    transform-origin: top center;
+
+                    > * {
+                        opacity: 0;
+                    }
+                }
+            }
+
+            @include termeh.mobile() {
+                padding: $padding * 2 0 0;
+
+                .modal {
+                    box-shadow: $sheet-shadow;
+                    border-radius: $sheet-radius;
                     border-bottom-left-radius: 0;
                     border-bottom-right-radius: 0;
+
+                    .modal-header {
+                        border-top-left-radius: $sheet-radius;
+                        border-top-right-radius: $sheet-radius;
+
+                        &.is-empty {
+                            background: $background;
+                        }
+
+                        .modal-handle {
+                            display: flex;
+                        }
+                    }
+
+                    .modal-actions {
+                        border-bottom-left-radius: 0;
+                        border-bottom-right-radius: 0;
+                    }
                 }
             }
         }
